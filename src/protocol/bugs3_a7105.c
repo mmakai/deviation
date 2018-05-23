@@ -25,6 +25,7 @@
 #include "config/model.h"
 #include <string.h>
 #include <stdlib.h>
+#include "bugs3_rxid_radioid_map.h"
 
 #ifdef EMULATOR
 #define USE_FIXED_MFGID
@@ -364,8 +365,9 @@ static void set_radio_data(u8 index) {
             {0xac59a453, {0x1d, 0x3b, 0x4d, 0x29, 0x11, 0x2d, 0x0b, 0x3d,
                           0x59, 0x48, 0x17, 0x41, 0x23, 0x4e, 0x2a, 0x63}},
             // data phase for txid 767194 if rx responds C6 BB 57 7F 00 00 00 00 00 00 FF 87 40 00 00 00
-            {0xA4C56AB4, {0x4b, 0x19, 0x35, 0x1e, 0x63, 0x0f, 0x45, 0x21,
-                          0x51, 0x3a, 0x5d, 0x25, 0x0a, 0x44, 0x61, 0x27}},
+            // Comment out for testing, as my radioid happens to be 0xA4C56AB4
+            //{0xA4C56AB4, {0x4b, 0x19, 0x35, 0x1e, 0x63, 0x0f, 0x45, 0x21,
+            //              0x51, 0x3a, 0x5d, 0x25, 0x0a, 0x44, 0x61, 0x27}},
             // data phase for txid 767194 if rx responds A3 1E D7 7f 00 00 00 00 00 00 ff 87 00 00 00 00
             {0x57358d96, {0x4b, 0x19, 0x35, 0x1e, 0x63, 0x0f, 0x45, 0x21,
                           0x51, 0x3a, 0x5d, 0x25, 0x0a, 0x44, 0x61, 0x27}},
@@ -464,7 +466,9 @@ static u16 bugs3_cb() {
             set_radio_data(1);
             A7105_WriteID(Model.fixed_id);
         } else {
-            Model.fixed_id = (packet[1] << 8) + packet[2];
+            u16 rxid = (packet[1] << 8) + packet[2];
+            u32 radioid = rxid_to_radioid(rxid);
+            Model.fixed_id = radioid;
             break;
         }
 
